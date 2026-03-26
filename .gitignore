@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+relatorios_gerados/*.txt
+relatorios_gerados/*.html
