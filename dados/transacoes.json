@@ -1,0 +1,44 @@
+{
+  "transacoes": [
+    {
+      "id": 1,
+      "tipo": "receita",
+      "descricao": "Venda de produtos - NF 001",
+      "valor": 1500.00,
+      "data": "2026-03-01",
+      "data_vencimento": "2026-03-15",
+      "data_pagamento": "2026-03-14",
+      "status": "pago",
+      "categoria": "vendas",
+      "cliente_id": 1,
+      "observacoes": ""
+    },
+    {
+      "id": 2,
+      "tipo": "despesa",
+      "descricao": "Aluguel do escritório",
+      "valor": 2000.00,
+      "data": "2026-03-01",
+      "data_vencimento": "2026-03-10",
+      "data_pagamento": null,
+      "status": "pendente",
+      "categoria": "aluguel",
+      "cliente_id": null,
+      "observacoes": "Pagamento mensal"
+    },
+    {
+      "id": 3,
+      "tipo": "receita",
+      "descricao": "Serviço de consultoria",
+      "valor": 3500.00,
+      "data": "2026-03-05",
+      "data_vencimento": "2026-04-05",
+      "data_pagamento": null,
+      "status": "pendente",
+      "categoria": "servicos",
+      "cliente_id": 1,
+      "observacoes": ""
+    }
+  ],
+  "proximo_id": 4
+}

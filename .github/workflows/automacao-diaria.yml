@@ -1,0 +1,43 @@
+name: Automação Diária do Escritório
+
+on:
+  schedule:
+    # Roda todo dia às 11:00 UTC (08:00 Brasília)
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+    inputs:
+      dias_alerta:
+        description: 'Dias para alerta de vencimento'
+        required: false
+        default: '7'
+
+jobs:
+  rotina-diaria:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Executar rotina diária
+        run: |
+          echo "=== Iniciando Automação Diária ==="
+          echo "Data: $(date '+%d/%m/%Y %H:%M:%S')"
+          echo ""
+          python -m automacao.main diario
+
+      - name: Executar status geral
+        run: python -m automacao.main status
+
+      - name: Salvar relatórios como artefatos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: relatorios-diarios-${{ github.run_number }}
+          path: relatorios_gerados/
+          retention-days: 30

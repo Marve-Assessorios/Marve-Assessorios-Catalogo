@@ -1,0 +1,77 @@
+name: Fechamento Tributário Mensal
+
+on:
+  schedule:
+    # Roda no dia 1 de cada mês às 12:00 UTC (09:00 Brasília)
+    - cron: '0 12 1 * *'
+  workflow_dispatch:
+    inputs:
+      mes:
+        description: 'Mês de referência (1-12). Deixe vazio para mês anterior.'
+        required: false
+      ano:
+        description: 'Ano de referência. Deixe vazio para ano atual.'
+        required: false
+      regime:
+        description: 'Regime tributário (simples_nacional, lucro_presumido, lucro_real, mei)'
+        required: false
+        default: ''
+        type: choice
+        options:
+          - ''
+          - simples_nacional
+          - lucro_presumido
+          - lucro_real
+          - mei
+
+jobs:
+  fechamento:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Executar fechamento tributário
+        run: |
+          echo "=== Fechamento Tributário Mensal ==="
+          echo "Data de execução: $(date '+%d/%m/%Y %H:%M:%S')"
+          echo ""
+
+          ARGS=""
+          if [ -n "${{ github.event.inputs.mes }}" ]; then
+            ARGS="$ARGS --mes ${{ github.event.inputs.mes }}"
+          fi
+          if [ -n "${{ github.event.inputs.ano }}" ]; then
+            ARGS="$ARGS --ano ${{ github.event.inputs.ano }}"
+          fi
+          if [ -n "${{ github.event.inputs.regime }}" ]; then
+            ARGS="$ARGS --regime ${{ github.event.inputs.regime }}"
+          fi
+
+          python -m automacao.main fechamento $ARGS
+
+      - name: Gerar relatório de faturamento
+        run: python -m automacao.main relatorio --tipo faturamento
+
+      - name: Gerar relatório de vendas
+        run: |
+          MES="${{ github.event.inputs.mes }}"
+          ANO="${{ github.event.inputs.ano }}"
+          ARGS=""
+          if [ -n "$MES" ]; then ARGS="$ARGS --mes $MES"; fi
+          if [ -n "$ANO" ]; then ARGS="$ARGS --ano $ANO"; fi
+          python -m automacao.main relatorio --tipo vendas $ARGS
+
+      - name: Salvar relatórios como artefatos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fechamento-mensal-${{ github.run_number }}
+          path: relatorios_gerados/
+          retention-days: 90

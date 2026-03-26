@@ -1,0 +1,29 @@
+{
+  "razao_social": "Sua Empresa LTDA",
+  "nome_fantasia": "Sua Empresa",
+  "cnpj": "00.000.000/0001-00",
+  "inscricao_estadual": "",
+  "inscricao_municipal": "",
+  "regime_tributario": "simples_nacional",
+  "atividade_principal": "comercio",
+  "endereco": {
+    "logradouro": "",
+    "numero": "",
+    "complemento": "",
+    "bairro": "",
+    "cidade": "",
+    "estado": "",
+    "cep": ""
+  },
+  "contato": {
+    "telefone": "",
+    "email": "",
+    "whatsapp": ""
+  },
+  "configuracoes": {
+    "moeda": "BRL",
+    "fuso_horario": "America/Sao_Paulo",
+    "dia_fechamento": 1,
+    "alerta_vencimento_dias": 7
+  }
+}

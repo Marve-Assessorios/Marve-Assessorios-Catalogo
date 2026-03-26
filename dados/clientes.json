@@ -1,0 +1,17 @@
+{
+  "clientes": [
+    {
+      "id": 1,
+      "nome": "Cliente Exemplo",
+      "cpf_cnpj": "123.456.789-09",
+      "tipo": "pessoa_fisica",
+      "email": "cliente@exemplo.com",
+      "telefone": "(11) 99999-0000",
+      "endereco": "Rua Exemplo, 100 - São Paulo/SP",
+      "data_cadastro": "2026-01-15",
+      "observacoes": "Cliente desde janeiro/2026",
+      "status": "ativo"
+    }
+  ],
+  "proximo_id": 2
+}

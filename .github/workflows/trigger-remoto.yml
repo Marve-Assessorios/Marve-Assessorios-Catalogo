@@ -1,0 +1,136 @@
+name: Execução Remota - Automação de Escritório
+
+on:
+  workflow_dispatch:
+    inputs:
+      tarefa:
+        description: 'Tarefa a executar'
+        required: true
+        type: choice
+        options:
+          - status
+          - diario
+          - fechamento
+          - financeiro-resumo
+          - financeiro-fluxo
+          - financeiro-conciliacao
+          - financeiro-previsao
+          - relatorio-vendas
+          - relatorio-faturamento
+          - relatorio-cobranca
+          - relatorio-followup
+          - todos-relatorios
+      mes:
+        description: 'Mês (1-12, opcional)'
+        required: false
+      ano:
+        description: 'Ano (opcional)'
+        required: false
+      regime:
+        description: 'Regime tributário (apenas para fechamento)'
+        required: false
+        type: choice
+        options:
+          - ''
+          - simples_nacional
+          - lucro_presumido
+          - lucro_real
+          - mei
+
+jobs:
+  executar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Executar tarefa
+        run: |
+          echo "╔══════════════════════════════════════════════════╗"
+          echo "║  EXECUÇÃO REMOTA - AUTOMAÇÃO DE ESCRITÓRIO      ║"
+          echo "╚══════════════════════════════════════════════════╝"
+          echo ""
+          echo "Tarefa: ${{ github.event.inputs.tarefa }}"
+          echo "Data: $(date '+%d/%m/%Y %H:%M:%S')"
+          echo "Disparado por: ${{ github.actor }}"
+          echo ""
+
+          TAREFA="${{ github.event.inputs.tarefa }}"
+          MES="${{ github.event.inputs.mes }}"
+          ANO="${{ github.event.inputs.ano }}"
+          REGIME="${{ github.event.inputs.regime }}"
+
+          MES_ARG=""
+          ANO_ARG=""
+          REGIME_ARG=""
+          if [ -n "$MES" ]; then MES_ARG="--mes $MES"; fi
+          if [ -n "$ANO" ]; then ANO_ARG="--ano $ANO"; fi
+          if [ -n "$REGIME" ]; then REGIME_ARG="--regime $REGIME"; fi
+
+          case "$TAREFA" in
+            "status")
+              python -m automacao.main status
+              ;;
+            "diario")
+              python -m automacao.main diario
+              ;;
+            "fechamento")
+              python -m automacao.main fechamento $MES_ARG $ANO_ARG $REGIME_ARG
+              ;;
+            "financeiro-resumo")
+              python -m automacao.main financeiro --tipo resumo
+              ;;
+            "financeiro-fluxo")
+              python -m automacao.main financeiro --tipo fluxo
+              ;;
+            "financeiro-conciliacao")
+              python -m automacao.main financeiro --tipo conciliacao
+              ;;
+            "financeiro-previsao")
+              python -m automacao.main financeiro --tipo previsao
+              ;;
+            "relatorio-vendas")
+              python -m automacao.main relatorio --tipo vendas $MES_ARG $ANO_ARG
+              ;;
+            "relatorio-faturamento")
+              python -m automacao.main relatorio --tipo faturamento $ANO_ARG
+              ;;
+            "relatorio-cobranca")
+              python -m automacao.main relatorio --tipo cobranca
+              ;;
+            "relatorio-followup")
+              python -m automacao.main relatorio --tipo followup
+              ;;
+            "todos-relatorios")
+              echo "=== Gerando todos os relatórios ==="
+              python -m automacao.main relatorio --tipo vendas $MES_ARG $ANO_ARG
+              echo ""
+              python -m automacao.main relatorio --tipo faturamento $ANO_ARG
+              echo ""
+              python -m automacao.main relatorio --tipo cobranca
+              echo ""
+              python -m automacao.main relatorio --tipo followup
+              echo ""
+              python -m automacao.main financeiro --tipo resumo
+              echo ""
+              python -m automacao.main fechamento $MES_ARG $ANO_ARG $REGIME_ARG
+              ;;
+            *)
+              echo "Tarefa não reconhecida: $TAREFA"
+              exit 1
+              ;;
+          esac
+
+      - name: Salvar relatórios
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: execucao-remota-${{ github.event.inputs.tarefa }}-${{ github.run_number }}
+          path: relatorios_gerados/
+          retention-days: 30
