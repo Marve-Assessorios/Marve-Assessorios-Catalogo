@@ -20,6 +20,7 @@ on:
           - relatorio-cobranca
           - relatorio-followup
           - todos-relatorios
+          - dashboard
       mes:
         description: 'Mês (1-12, opcional)'
         required: false
@@ -106,6 +107,9 @@ jobs:
               ;;
             "relatorio-followup")
               python -m automacao.main relatorio --tipo followup
+              ;;
+            "dashboard")
+              python -m automacao.main dashboard
               ;;
             "todos-relatorios")
               echo "=== Gerando todos os relatórios ==="

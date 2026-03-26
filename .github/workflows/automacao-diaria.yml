@@ -34,6 +34,9 @@ jobs:
       - name: Executar status geral
         run: python -m automacao.main status
 
+      - name: Gerar dashboard
+        run: python -m automacao.main dashboard
+
       - name: Salvar relatórios como artefatos
         uses: actions/upload-artifact@v4
         if: always()
