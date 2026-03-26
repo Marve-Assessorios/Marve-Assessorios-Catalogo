@@ -35,7 +35,17 @@ jobs:
         run: python -m automacao.main status
 
       - name: Gerar dashboard
-        run: python -m automacao.main dashboard
+        run: |
+          python -m automacao.main dashboard
+          cp relatorios_gerados/dashboard.html dashboard.html
+
+      - name: Publicar dashboard no GitHub Pages
+        run: |
+          git config user.name "Automação IA"
+          git config user.email "automacao@cloudconta.com.br"
+          git add dashboard.html
+          git diff --staged --quiet || git commit -m "Atualizar dashboard - $(date '+%d/%m/%Y %H:%M')"
+          git push || true
 
       - name: Salvar relatórios como artefatos
         uses: actions/upload-artifact@v4
