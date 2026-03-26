@@ -38,6 +38,7 @@ from automacao.clientes.cobranca import gerar_relatorio_cobranca
 from automacao.relatorios.vendas import gerar_relatorio_vendas
 from automacao.relatorios.faturamento import gerar_relatorio_faturamento
 from automacao.relatorios.gerador_pdf import gerar_html, salvar_relatorio_texto
+from automacao.relatorios.dashboard import gerar_dashboard
 from automacao.utils.formatadores import formatar_moeda
 
 
@@ -215,6 +216,14 @@ def comando_relatorio(tipo="vendas", mes=None, ano=None):
     print(f"HTML: {caminho_html}")
 
 
+def comando_dashboard():
+    """Gera dashboard visual em HTML."""
+    print("Gerando dashboard...")
+    caminho = gerar_dashboard()
+    print(f"Dashboard gerado com sucesso!")
+    print(f"Abra no navegador: {caminho}")
+
+
 def comando_ajuda():
     """Mostra ajuda do sistema."""
     print("""
@@ -234,6 +243,7 @@ COMANDOS:
                                   (resumo, fluxo, conciliacao, previsao)
   relatorio [--tipo TIPO]         Gerar relatórios
             [--mes M] [--ano A]   (vendas, faturamento, cobranca, followup)
+  dashboard                       Gera dashboard visual HTML com gráficos
   ajuda                           Mostra esta mensagem
 
 EXEMPLOS:
@@ -299,6 +309,8 @@ def main():
             mes = int(args["mes"]) if "mes" in args else None
             ano = int(args["ano"]) if "ano" in args else None
             comando_relatorio(tipo, mes, ano)
+        elif comando == "dashboard":
+            comando_dashboard()
         elif comando in ("ajuda", "help", "--help", "-h"):
             comando_ajuda()
         else:
